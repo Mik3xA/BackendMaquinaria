@@ -1,103 +1,165 @@
-Backend - Plataforma de Renta de Maquinaria
+Plataforma Web de Gestión y Renta de Maquinaria Pesada (Backend)
 
-Estudiante: Michael Armani Gonzalez Arciga Materia: Desarrollo de Software Fecha: 30 de Noviembre, 2025
-Descripción del Proyecto
+Estudiante: Michael Armani Gonzalez Arciga Proyecto: Maquinaria del Bajío Fecha: 07 de Diciembre, 2025
+1. Descripción del Proyecto
 
-Este repositorio contiene el código fuente del Backend para la plataforma "Maquinaria del Bajío". Se trata de una API RESTful desarrollada en .NET 8 que sirve como el motor lógico y de datos para un sistema de renta de maquinaria pesada.
+El proyecto consiste en el desarrollo del componente Backend para una solución de software tipo Full-Stack, orientada a la administración y renta de maquinaria pesada. Su propósito principal es digitalizar y optimizar el proceso de alquiler de equipos, centralizando la gestión del inventario y automatizando la cotización de servicios.
+Funcionalidad Principal
 
-El propósito principal de este backend es centralizar la gestión del inventario y automatizar el proceso de renta, asegurando que las reglas de negocio (como la disponibilidad de fechas y el cálculo de costos) se cumplan de manera estricta y segura.
-Funcionalidades Principales
+El sistema funciona como una API RESTful que procesa la lógica de negocio y la persistencia de datos para una plataforma web. Sus funciones críticas incluyen:
 
-    Autenticación y Seguridad: Sistema de Login y Registro protegido con JWT (JSON Web Tokens). Incluye roles de usuario (Cliente y Administrador).
+    Gestión de Identidad: Administración de usuarios mediante roles (Cliente y Administrador) y seguridad basada en tokens.
 
-    Gestión de Inventario: Permite a los administradores agregar maquinaria a la base de datos y eliminarla.
+    Control de Inventario: Permite a los administradores registrar, actualizar y eliminar maquinaria del catálogo.
 
-    Motor de Rentas: Lógica compleja que recibe fechas de renta, valida que la maquinaria no esté ocupada en ese rango y calcula el costo total automáticamente.
+    Motor de Procesamiento de Rentas: Algoritmo que valida la disponibilidad de equipos en rangos de fechas específicos y calcula automáticamente los costos totales de arrendamiento, asegurando la integridad de las transacciones y evitando conflictos de agenda.
 
-    Historial de Cliente: Permite a los usuarios consultar sus rentas activas y pasadas.
+2. Tecnologías Utilizadas
 
-    Devolución de Equipos: Proceso para finalizar una renta y liberar la maquinaria.
+    Lenguaje y Framework: .NET 8 (C#) Web API.
 
-🔌 Lista Completa de Endpoints
+    Base de Datos: PostgreSQL (Ejecutado mediante contenedor Docker).
 
-La API cuenta con los siguientes servicios distribuidos por controladores:
-1. Autenticación (AuthController)
-Método	Ruta	Descripción	Acceso
-POST	/api/Auth/register	Registra un nuevo usuario con rol de Cliente.	Público
-POST	/api/Auth/login	Autentica credenciales y devuelve Token JWT + Datos del Usuario.	Público
-POST	/api/Auth/change-password	Permite al usuario autenticado cambiar su contraseña.	User/Admin
-2. Maquinaria (MachineryController)
-Método	Ruta	Descripción	Acceso
-GET	/api/Machinery	Obtiene la lista completa de equipos disponibles.	Público
-GET	/api/Machinery/{id}	Obtiene los detalles de una máquina específica por su ID.	Público
-POST	/api/Machinery	Crea una nueva máquina en el inventario.	Admin
-DELETE	/api/Machinery/{id}	Elimina una máquina del catálogo permanentemente.	Admin
-3. Rentas (RentalController)
-Método	Ruta	Descripción	Acceso
-POST	/api/Rental/rent	(Algorítmico) Procesa una nueva renta, valida fechas y calcula costos.	User/Admin
-GET	/api/Rental/my-rentals	Obtiene el historial de rentas del usuario logueado.	User/Admin
-POST	/api/Rental/return/{id}	Marca una renta como finalizada (Devolución del equipo).	User/Admin
-Instrucciones para Ejecutar el Proyecto
+    ORM: Entity Framework Core para la manipulación de datos.
 
-Sigue estos pasos para levantar el servidor y la base de datos en tu computadora.
-Requerimientos del Sistema
+    Seguridad: Implementación de JSON Web Tokens (JWT) para autenticación y autorización.
 
-    Docker Desktop (para la base de datos).
+    Validación: FluentValidation para garantizar la integridad de los datos de entrada.
+
+3. Documentación de la API (Endpoints)
+
+La API expone diversos servicios organizados por módulos funcionales. A continuación, se describen los endpoints implementados más relevantes:
+Módulo I: Autenticación y Usuarios
+
+    Inicio de Sesión
+
+        Método: POST
+
+        Ruta: /api/Auth/login
+
+        Descripción: Recibe las credenciales del usuario, valida la información contra la base de datos utilizando hash criptográfico y retorna un Token JWT.
+
+    Registro de Clientes
+
+        Método: POST
+
+        Ruta: /api/Auth/register
+
+        Descripción: Permite la creación de nuevas cuentas de usuario con el rol de cliente.
+
+    Cambio de Contraseña
+
+        Método: POST
+
+        Ruta: /api/Auth/change-password
+
+        Descripción: Permite a un usuario autenticado actualizar su contraseña, validando previamente la contraseña actual.
+
+Módulo II: Gestión de Maquinaria
+
+    Obtener Catálogo
+
+        Método: GET
+
+        Ruta: /api/Machinery
+
+        Descripción: Servicio público que recupera el listado completo de equipos disponibles.
+
+    Alta de Inventario
+
+        Método: POST
+
+        Ruta: /api/Machinery
+
+        Descripción: Endpoint protegido para administradores. Permite registrar un nuevo equipo.
+
+    Eliminar Maquinaria
+
+        Método: DELETE
+
+        Ruta: /api/Machinery/{id}
+
+        Descripción: Endpoint protegido para administradores. Elimina un registro del catálogo.
+
+Módulo III: Procesamiento de Rentas
+
+    Crear Renta (Algorítmico)
+
+        Método: POST
+
+        Ruta: /api/Rental/rent
+
+        Descripción: Ejecuta la lógica central del negocio. Recibe el ID de la máquina y el rango de fechas. El algoritmo verifica disponibilidad, calcula el costo total y genera el registro.
+
+    Historial de Rentas
+
+        Método: GET
+
+        Ruta: /api/Rental/my-rentals
+
+        Descripción: Devuelve el listado de rentas asociadas al usuario autenticado.
+
+    Devolución de Equipo
+
+        Método: POST
+
+        Ruta: /api/Rental/return/{id}
+
+        Descripción: Finaliza un contrato de renta activo.
+
+4. Instrucciones de Ejecución
+Requerimientos
+
+    Docker Desktop.
 
     .NET 8 SDK.
 
-    Postman (para pruebas).
+    Postman.
 
-1. Configurar la Base de Datos
+Pasos de Instalación
 
-El proyecto incluye un archivo docker-compose.yml en la raíz de este repositorio.
-
-    Abre una terminal en la carpeta raíz del proyecto.
-
-    Ejecuta:
+    Base de Datos: Navegue a la carpeta raíz del repositorio y ejecute el siguiente comando para levantar el contenedor de PostgreSQL:
     Bash
 
-    docker-compose up -d
+docker-compose up -d
 
-2. Iniciar el Servidor (API)
-
-    Ingresa a la carpeta del proyecto API:
-    Bash
-
-cd API
-
-Restaura paquetes e inicia:
+Ejecución del Servidor: Abra una terminal, navegue a la carpeta API y ejecute:
 Bash
 
     dotnet restore
     dotnet run
 
-    Verás un mensaje indicando que el servidor está escuchando en: http://localhost:5093.
+    El servidor iniciará en el puerto 5093 (http://localhost:5093).
 
-    Nota: Al iniciar, el sistema ejecutará automáticamente las migraciones y creará el usuario administrador por defecto.
+Credenciales de Administrador
 
-3. Credenciales de Administrador
-
-Para acceder a las funciones de gestión, utiliza la siguiente cuenta pre-configurada:
+Para probar los endpoints protegidos, utilice la cuenta predeterminada creada por el sembrador de datos (DbInitializer):
 
     Correo: admin@renta.com
 
     Contraseña: admin132
 
-Colección de Postman
+5. Colección de Postman y Automatización
 
-En la raíz de este repositorio encontrarás el archivo: Maquinaria_API.postman_collection.json
+En la raíz de este repositorio se incluye el archivo Maquinaria_API.postman_collection.json. Esta colección ha sido configurada con scripts de automatización para facilitar las pruebas del API sin intervención manual constante.
+Características de la Automatización:
 
-Esta colección incluye:
+    Variable de Entorno (baseUrl): Todas las peticiones utilizan la variable {{baseUrl}} (configurada como http://localhost:5093), lo que permite cambiar el entorno de despliegue sin modificar cada endpoint individualmente.
 
-    Variables de entorno ({{baseUrl}}) preconfiguradas.
+    Captura Automática de Token (Script): El endpoint de Login contiene un script de prueba (Tests) que intercepta la respuesta del servidor. Al recibir un inicio de sesión exitoso, el script extrae el Token JWT y lo asigna automáticamente a la variable de colección token.
 
-    Scripts de automatización para capturar el Token JWT al hacer Login.
+    Código del Script implementado:
+    JavaScript
 
-    Ejemplos de peticiones para todos los endpoints listados arriba.
+    var jsonData = pm.response.json();
+    if (jsonData.token) {
+        pm.collectionVariables.set("token", jsonData.token);
+    }
 
-Video Demostrativo
+    Autorización Heredada: Todos los endpoints protegidos (como "Alta de Inventario" o "Crear Renta") están configurados para heredar la autorización de la colección principal. Esto significa que utilizan automáticamente el token capturado por el script de Login, eliminando la necesidad de copiar y pegar el token manualmente en cada petición.
 
-Evidencia del funcionamiento del sistema:
+6. Video Demostrativo
+
+A continuación, se presenta la evidencia visual del funcionamiento de los endpoints, la lógica de negocio y la automatización descrita anteriormente:
 
 [PEGAR AQUI TU ENLACE DE YOUTUBE]
