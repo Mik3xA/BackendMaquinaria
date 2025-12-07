@@ -1,0 +1,11 @@
+# Ignorar carpetas de compilación de .NET
+bin/
+obj/
+.vs/
+.vscode/
+appsettings.Development.json
+*.user
+
+# Ignorar archivos de sistema
+.DS_Store
+Thumbs.db
